@@ -32,7 +32,7 @@ timelist1 = []
 errorestimate1 = []
 
 #adaptive refinement
-while len(elements) < 10**6 and errorest > tol:
+while len(elements) < 3*10**5 and errorest > tol:
 
     rco,rel,rbo = coordinates,elements,boundary
     nstart = time.process_time()
@@ -70,8 +70,8 @@ tris = ax.plot_trisurf(rco[:,0],rco[:,1],x[len(x)//2:],cmap="cool")
 plt.figure().colorbar(tris,ax = ax)
 plt.show()
 
-# plot adaptive mesh if less than 5000 elements
-if len(rel) < 5000:
+# plot adaptive mesh if less than 1000 elements
+if len(rel) < 1000:
     T = []
     for i in range(len(rel)):
         for j in range(3):
@@ -92,7 +92,7 @@ elementlist2 = []
 errorestimate2 = []
 
 #uniform refinement
-while len(elements) < 1050000 and errorest > tol:
+while len(elements) < 3*10**5 and errorest > tol:
     rco,rel,rbo = coordinates,elements,boundary
     nstart = time.process_time()
     print("Number of Elements: ", len(elements))
@@ -106,29 +106,19 @@ while len(elements) < 1050000 and errorest > tol:
         coordinates, elements, boundary = nvb(coordinates, elements, boundary, marked)
     timelist2.append(time.process_time()-nstart)
 
-# plot uniform mesh
-if len(rel) < 5000:
-    T = []
-    for i in range(len(rel)):
-        for j in range(3):
-            T.append([rco[rel[i][j]][0],rco[rel[i][j]][1]])
-    D = np.array(T)
-    for i in range(len(T)//3):
-        plt.gca().add_patch(plt.Polygon(D[i*3:i*3+3],edgecolor="black",facecolor="none"))
-    plt.show()
-
 # errorestimateplot
-plt.loglog(elementlist1,errorestimate1,label="p = 1 adap.")
+plt.loglog(elementlist1,errorestimate1,"-o",label="p = 1 adap.")
 plt.loglog(elementlist1,np.array(elementlist1)**(-1/2),":",color = "black")
-plt.loglog(elementlist2,errorestimate2,label="p = 1")
+plt.loglog(elementlist2,errorestimate2,"-s",label="p = 1")
 plt.xlabel("Number of Elements")
 plt.ylabel("Error Estimate")
 plt.legend(loc="best")
 plt.show()
 
 # timeplot
-plt.loglog(elementlist1,timelist1,label="adaptive refinement")
-plt.loglog(elementlist2,timelist2,label="uniform refinement")
+plt.loglog(elementlist1,timelist1,"-o",label="adaptive refinement")
+plt.loglog(elementlist2,timelist2,"-s",label="uniform refinement")
+plt.loglog(elementlist1,np.divide(elementlist1,2500))
 plt.xlabel("Number of Elements")
 plt.ylabel("Time in seconds")
 plt.legend(loc="best")
